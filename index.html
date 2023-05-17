@@ -49,6 +49,7 @@
         const board = document.getElementById('board');
         const moveInput = document.getElementById('moveInput');
         const bishopColor = document.getElementById('bishopColor');
+        const resetButton = document.getElementById('resetButton');
         const flipButton = document.getElementById('flipButton');
         let piecePosition, pawnPosition;
         let flipped = false;
@@ -135,6 +136,18 @@
         moveInput.addEventListener("keyup", function(event) {
             if (event.key === "Enter") {
                 movePiece();
+            }
+        });
+
+        resetButton.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && resetButton === document.activeElement) {
+                event.preventDefault();
+            }
+        });
+
+        flipButton.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && flipButton === document.activeElement) {
+                event.preventDefault();
             }
         });
 

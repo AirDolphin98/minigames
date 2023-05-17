@@ -110,8 +110,8 @@
                 const diff1 = Math.abs(parseInt(newPosition[1]) - parseInt(piecePosition[1]));
                 if (squareColor === selectedColor) {
                     if (diff0 === 1 && diff1 === 1) {
-                        if (newPosition === pawnPosition) spawnPawn();
                         piecePosition = newPosition;
+                        if (newPosition === pawnPosition) spawnPawn();
                         placePieces();
                     } else {
                         alert('Invalid move. For this mini-game, the bishop can only move to an adjacent square.');

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 400px;
+            height: 400px;
+        }
+
+        .square {
+            border: 1px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+        }
+
+        .flipped {
+            transform: rotate(180deg);
+        }
+
+        .white {
+            background-color: #fff;
+        }
+
+        .black {
+            background-color: #000;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chess "Snake Game"</h1>
+    <div id="board" class="board"></div>
+    <br>
+    <input id="moveInput" type="text" placeholder="Enter position e.g. e4">
+    <button onclick="movePiece()">Move</button>
+    <select id="bishopColor" onchange="resetGame()">
+        <option value="white">Light Square Bishop</option>
+        <option value="black">Dark Square Bishop</option>
+    </select>
+    <button id="resetButton" onclick="resetGame()">Reset</button>
+    <button id="flipButton" onclick="flipBoard()">Flip Board</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const moveInput = document.getElementById('moveInput');
+        const bishopColor = document.getElementById('bishopColor');
+        const flipButton = document.getElementById('flipButton');
+        let piecePosition, pawnPosition;
+        let flipped = false;
+
+        function createBoard() {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const square = document.createElement('div');
+                    square.id = `${String.fromCharCode(97 + j)}${8 - i}`;
+                    square.className = `square ${((i + j) % 2 === 0) ? 'white' : 'black'}`;
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        function resetGame() {
+            piecePosition = bishopColor.value === 'white' ? (flipped ? 'c8' : 'f1') : (flipped ? 'f8' : 'c1');
+            spawnPawn();
+            placePieces();
+        }
+
+        function placePieces() {
+            document.querySelectorAll('.square').forEach(square => {
+                square.textContent = '';
+                if (square.id === piecePosition) {
+                    const bishop = document.createElement('div');
+                    bishop.textContent = flipped ? '♝' : '♗';
+                    bishop.className = flipped ? 'flipped' : '';
+                    square.appendChild(bishop);
+                } else if (square.id === pawnPosition) {
+                    const pawn = document.createElement('div');
+                    pawn.textContent = flipped ? '♘' : '♞';
+                    pawn.className = flipped ? 'flipped' : '';
+                    square.appendChild(pawn);
+                }
+            });
+        }
+
+        function spawnPawn() {
+            let newPosition;
+            do {
+                const file = Math.floor(Math.random() * 8);
+                const rank = Math.floor(Math.random() * 8);
+                newPosition = `${String.fromCharCode(97 + file)}${rank + 1}`;
+                pawnPosition = newPosition;
+            } while (Math.abs(newPosition.charCodeAt(0) - piecePosition.charCodeAt(0)) <= 2 && parseInt(newPosition[1]) === parseInt(piecePosition[1])
+                    || Math.abs(parseInt(newPosition[1]) - parseInt(piecePosition[1])) <= 2 && newPosition.charCodeAt(0) === piecePosition.charCodeAt(0) // within two squares
+                    || ((newPosition.charCodeAt(0) - 97 + parseInt(newPosition[1])) % 2 === 0) !== (bishopColor.value === 'white') // different color
+                    || Math.abs(newPosition.charCodeAt(0) - piecePosition.charCodeAt(0)) === Math.abs(parseInt(newPosition[1]) - parseInt(piecePosition[1]))); // same diagonal
+        }
+
+        function movePiece() {
+            const newPosition = moveInput.value;
+            const selectedColor = bishopColor.value;
+            if (/[a-h][1-8]/.test(newPosition)) {
+                const squareColor = ((newPosition.charCodeAt(0) - 97 + parseInt(newPosition[1])) % 2 === 0) ? 'white' : 'black';
+                const diff0 = Math.abs(newPosition.charCodeAt(0) - piecePosition.charCodeAt(0));
+                const diff1 = Math.abs(parseInt(newPosition[1]) - parseInt(piecePosition[1]));
+                if (squareColor === selectedColor) {
+                    if (diff0 === 1 && diff1 === 1) {
+                        if (newPosition === pawnPosition) spawnPawn();
+                        piecePosition = newPosition;
+                        placePieces();
+                    } else {
+                        alert('Invalid move. For this mini-game, the bishop can only move to an adjacent square.');
+                    }
+                } else {
+                    alert('Invalid move. Bishop can only move to a square of the same color.');
+                }
+            } else {
+                alert('Invalid move. Please enter a valid position like e4.');
+            }
+            moveInput.value = ''; // clear input field
+        }
+
+        function flipBoard() {
+            flipped = !flipped;
+            board.style.transform = flipped ? 'rotate(180deg)' : '';
+            flipButton.textContent = flipped ? 'Flip to White\'s Perspective' : 'Flip to Black\'s Perspective';
+            placePieces(); // update bishop color
+        }
+
+        moveInput.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                movePiece();
+            }
+        });
+
+        createBoard();
+        resetGame();
+    </script>
+</body>
+</html>

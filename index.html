@@ -101,6 +101,7 @@
         }
 
         function movePiece() {
+            if (moveInput.value === '') { return; }
             const newPosition = moveInput.value.slice(0,2);
             const selectedColor = bishopColor.value;
             if (/[a-h][1-8]/.test(newPosition)) {

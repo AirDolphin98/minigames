@@ -101,7 +101,7 @@
         }
 
         function movePiece() {
-            const newPosition = moveInput.value;
+            const newPosition = moveInput.value.slice(0,2);
             const selectedColor = bishopColor.value;
             if (/[a-h][1-8]/.test(newPosition)) {
                 const squareColor = ((newPosition.charCodeAt(0) - 97 + parseInt(newPosition[1])) % 2 === 0) ? 'white' : 'black';
